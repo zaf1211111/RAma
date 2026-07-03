@@ -1,0 +1,481 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>عيد ميلاد سعيد</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Cairo:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#3a2b2f;
+    --wine:#7a2e3a;
+    --wine-deep:#5c1f28;
+    --parchment:#f4e9d8;
+    --parchment-deep:#ece0cb;
+    --gold:#b8863f;
+    --gold-light:#dcb677;
+  }
+  *{box-sizing:border-box;}
+  html,body{height:100%;}
+  body{
+    margin:0;
+    min-height:100vh;
+    font-family:'Cairo',sans-serif;
+    background:
+      radial-gradient(ellipse at 50% -10%, rgba(122,46,58,.15), transparent 55%),
+      linear-gradient(180deg, #2a1f22, #1c1517 60%);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    overflow:hidden;
+    position:relative;
+    padding:24px;
+  }
+
+  /* توهج محيطي ثابت */
+  .ambient-glow{
+    position:fixed;
+    width:600px; height:600px;
+    border-radius:50%;
+    background:radial-gradient(circle, rgba(184,134,63,.10), transparent 70%);
+    top:-10%; left:-10%;
+    pointer-events:none;
+    z-index:0;
+  }
+  .ambient-glow.two{
+    top:auto; left:auto;
+    bottom:-15%; right:-10%;
+    background:radial-gradient(circle, rgba(122,46,58,.14), transparent 70%);
+  }
+
+  /* غبار ذهبي عائم */
+  .mote{
+    position:fixed;
+    border-radius:50%;
+    background:var(--gold-light);
+    opacity:.35;
+    pointer-events:none;
+    z-index:1;
+    animation:float-mote linear infinite;
+  }
+  @keyframes float-mote{
+    0%{transform:translateY(0) translateX(0); opacity:0;}
+    10%{opacity:.5;}
+    90%{opacity:.4;}
+    100%{transform:translateY(-100vh) translateX(20px); opacity:0;}
+  }
+
+  /* ------- شاشة الختم ------- */
+  #sealScreen{
+    position:relative;
+    z-index:5;
+    text-align:center;
+    animation:riseIn 1.2s cubic-bezier(.22,.9,.35,1);
+  }
+  @keyframes riseIn{
+    from{opacity:0; transform:translateY(20px);}
+    to{opacity:1; transform:translateY(0);}
+  }
+
+  .eyebrow{
+    font-family:'Amiri', serif;
+    letter-spacing:.2em;
+    color:var(--gold-light);
+    font-size:.85rem;
+    margin-bottom:10px;
+    text-transform:uppercase;
+  }
+  #sealScreen h1{
+    font-family:'Amiri', serif;
+    color:var(--parchment);
+    font-size:1.7rem;
+    margin:0 0 46px;
+    font-weight:700;
+  }
+
+  .seal{
+    width:132px;
+    height:132px;
+    margin:0 auto;
+    border-radius:50%;
+    cursor:pointer;
+    position:relative;
+    background:
+      radial-gradient(circle at 32% 28%, #9c4152, var(--wine) 55%, var(--wine-deep) 100%);
+    box-shadow:
+      0 0 0 1px rgba(184,134,63,.4),
+      0 18px 36px rgba(0,0,0,.5),
+      inset 0 2px 4px rgba(255,255,255,.15),
+      inset 0 -6px 14px rgba(0,0,0,.35);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    transition:transform .35s ease, box-shadow .35s ease;
+  }
+  .seal:hover{
+    transform:scale(1.04);
+    box-shadow:
+      0 0 0 1px rgba(184,134,63,.6),
+      0 22px 44px rgba(0,0,0,.55),
+      inset 0 2px 4px rgba(255,255,255,.2),
+      inset 0 -6px 14px rgba(0,0,0,.35);
+  }
+  .seal-glyph{
+    font-family:'Amiri', serif;
+    color:var(--gold-light);
+    font-size:2.1rem;
+    font-weight:700;
+    text-shadow:0 1px 1px rgba(0,0,0,.4);
+    user-select:none;
+  }
+  .seal-ring{
+    position:absolute;
+    inset:10px;
+    border:1px dashed rgba(220,182,119,.55);
+    border-radius:50%;
+    pointer-events:none;
+  }
+
+  .seal-crack{
+    position:absolute;
+    inset:0;
+    pointer-events:none;
+  }
+
+  .tap-hint{
+    margin-top:24px;
+    font-size:.8rem;
+    color:rgba(244,233,216,.6);
+    letter-spacing:.1em;
+  }
+
+  /* حالة الكسر */
+  .seal.breaking{
+    animation:seal-shake .5s ease;
+  }
+  @keyframes seal-shake{
+    0%,100%{transform:scale(1) rotate(0deg);}
+    20%{transform:scale(1.02) rotate(-2deg);}
+    40%{transform:scale(1.02) rotate(2deg);}
+    60%{transform:scale(1.05) rotate(-1deg);}
+    80%{transform:scale(1.08) rotate(1deg);}
+  }
+
+  /* شظايا الختم */
+  .shard{
+    position:fixed;
+    z-index:15;
+    background:var(--wine);
+    border-radius:2px;
+    pointer-events:none;
+  }
+
+  /* ------- الرسالة (تُطوى/تُفتح) ------- */
+  #letterWrap{
+    display:none;
+    position:relative;
+    z-index:5;
+    width:100%;
+    max-width:520px;
+    perspective:1800px;
+  }
+
+  .letter{
+    position:relative;
+    background:
+      linear-gradient(180deg, var(--parchment), var(--parchment-deep));
+    box-shadow:0 30px 70px rgba(0,0,0,.5), 0 0 0 1px rgba(184,134,63,.35);
+    padding:48px 38px 42px;
+    text-align:center;
+    transform-origin:top center;
+    animation:unfold 1s cubic-bezier(.2,.85,.25,1.05) forwards;
+  }
+  @keyframes unfold{
+    0%{ transform:rotateX(-90deg) translateY(-10px); opacity:0; }
+    60%{ opacity:1; }
+    100%{ transform:rotateX(0deg) translateY(0); opacity:1; }
+  }
+
+  .letter::before{
+    content:"";
+    position:absolute;
+    inset:9px;
+    border:1px solid rgba(184,134,63,.4);
+    pointer-events:none;
+  }
+  .letter::after{
+    content:"";
+    position:absolute;
+    inset:0;
+    background:
+      repeating-linear-gradient(180deg, rgba(122,46,58,.02) 0 2px, transparent 2px 4px);
+    pointer-events:none;
+    mix-blend-mode:multiply;
+    opacity:.5;
+  }
+
+  .card-eyebrow{
+    font-family:'Amiri', serif;
+    color:var(--gold);
+    letter-spacing:.18em;
+    font-size:.82rem;
+    margin-bottom:12px;
+    text-transform:uppercase;
+  }
+  .letter h1{
+    font-family:'Amiri', serif;
+    color:var(--wine-deep);
+    font-size:2.15rem;
+    margin:0 0 6px;
+    font-weight:700;
+  }
+  .letter h2{
+    color:var(--ink);
+    opacity:.75;
+    font-size:1rem;
+    font-weight:500;
+    margin:0 0 28px;
+  }
+
+  .photo-frame{
+    width:172px;
+    height:172px;
+    margin:0 auto 30px;
+    position:relative;
+    background:#fff;
+    padding:9px 9px 26px;
+    box-shadow:0 14px 30px rgba(0,0,0,.28);
+    transform:rotate(-3deg);
+  }
+  .photo-frame .inner{
+    width:100%;
+    height:136px;
+    overflow:hidden;
+  }
+  .photo-frame img{
+    width:100%;
+    height:100%;
+    object-fit:cover;
+    display:block;
+  }
+  .tape{
+    position:absolute;
+    top:-12px;
+    left:50%;
+    transform:translateX(-50%) rotate(-2deg);
+    width:70px;
+    height:24px;
+    background:rgba(220,182,119,.55);
+    box-shadow:0 2px 4px rgba(0,0,0,.15);
+  }
+
+  .divider{
+    width:1px;
+    height:26px;
+    background:var(--gold);
+    margin:0 auto 22px;
+    opacity:.6;
+  }
+
+  .letter p{
+    color:var(--ink);
+    font-size:1rem;
+    line-height:2.05;
+    margin:0 0 16px;
+  }
+
+  .signature{
+    margin-top:24px;
+    font-family:'Amiri', serif;
+    color:var(--wine-deep);
+    font-size:1.25rem;
+  }
+
+  .wish-tag{
+    display:inline-block;
+    margin-top:16px;
+    padding:10px 28px;
+    border:1px solid var(--gold);
+    color:var(--gold);
+    font-size:.9rem;
+    letter-spacing:.14em;
+    text-transform:uppercase;
+  }
+
+  /* توهج ذهبي متناثر عند الفتح */
+  .spark{
+    position:fixed;
+    border-radius:50%;
+    background:var(--gold-light);
+    z-index:20;
+    pointer-events:none;
+  }
+
+  @media (max-width:480px){
+    .letter{padding:38px 22px 32px;}
+    .letter h1{font-size:1.85rem;}
+    .photo-frame{width:145px;height:145px;}
+    .photo-frame .inner{height:112px;}
+  }
+
+  @media (prefers-reduced-motion: reduce){
+    *{animation-duration:.01ms !important; animation-iteration-count:1 !important; transition-duration:.01ms !important;}
+  }
+</style>
+</head>
+<body>
+
+<div class="ambient-glow"></div>
+<div class="ambient-glow two"></div>
+<div id="motes"></div>
+
+<!-- شاشة الختم -->
+<div id="sealScreen">
+  <div class="eyebrow">رسالة مختومة</div>
+  <h1>افتحي الختم لتقرأي الرسالة</h1>
+
+  <div class="seal" id="sealBtn" onclick="breakSeal()" role="button" tabindex="0" aria-label="افتحي الختم">
+    <div class="seal-ring"></div>
+    <span class="seal-glyph">٢٤</span>
+  </div>
+
+  <p class="tap-hint">اضغطي على الختم</p>
+</div>
+
+<!-- الرسالة -->
+<div id="letterWrap">
+  <div class="letter">
+    <div class="card-eyebrow">عيد ميلاد سعيد</div>
+    <h1>كل عام وأنتِ بخير</h1>
+    <h2>أربعة وعشرون عاماً من الجمال والنجاح</h2>
+
+    <div class="photo-frame">
+      <div class="tape"></div>
+      <div class="inner">
+        <!-- ضعي هنا صورتكما، المقاس المثالي مربع تقريباً 500×500 بكسل -->
+        <img src="1.jpg" alt="صورتنا معاً" onerror="this.src='https://via.placeholder.com/500x400.png?text=%D8%B5%D9%88%D8%B1%D8%AA%D9%83%D9%85%D8%A7'">
+      </div>
+    </div>
+
+    <div class="divider"></div>
+
+    <p>
+      عيد سعيد يا جميل ، في يومك هذا أتمنى لكِ سنة مليئة بالفرح
+      والضحك والنجاحات، وأن يتحقق كل ما تتمنينه في حياتك، صغيراً كان أو كبيراً.
+    </p>
+    </p>
+
+    <div class="signature">بكل الحب، صديقك</div>
+    <div class="wish-tag">عقبال المية سنة</div>
+  </div>
+</div>
+
+<script>
+/* غبار ذهبي عائم ثابت في الخلفية */
+function initMotes(){
+  const container = document.getElementById('motes');
+  const count = 22;
+  for(let i=0;i<count;i++){
+    const m = document.createElement('div');
+    m.className = 'mote';
+    const size = 2 + Math.random()*3;
+    m.style.width = size+'px';
+    m.style.height = size+'px';
+    m.style.left = Math.random()*100 + 'vw';
+    m.style.bottom = '-10px';
+    m.style.animationDuration = (10 + Math.random()*14) + 's';
+    m.style.animationDelay = (Math.random()*14) + 's';
+    container.appendChild(m);
+  }
+}
+initMotes();
+
+function breakSeal(){
+  const seal = document.getElementById('sealBtn');
+  const sealScreen = document.getElementById('sealScreen');
+  const letterWrap = document.getElementById('letterWrap');
+
+  seal.classList.add('breaking');
+  emitShards(seal);
+  emitSparks(seal);
+
+  setTimeout(()=>{
+    sealScreen.style.transition = 'opacity .45s ease, transform .45s ease';
+    sealScreen.style.opacity = '0';
+    sealScreen.style.transform = 'scale(.92)';
+  }, 380);
+
+  setTimeout(()=>{
+    sealScreen.style.display = 'none';
+    letterWrap.style.display = 'block';
+  }, 780);
+}
+
+function emitShards(seal){
+  const rect = seal.getBoundingClientRect();
+  const cx = rect.left + rect.width/2;
+  const cy = rect.top + rect.height/2;
+  const colors = ['#7a2e3a','#5c1f28','#b8863f'];
+
+  for(let i=0;i<14;i++){
+    const s = document.createElement('div');
+    s.className = 'shard';
+    const size = 4 + Math.random()*7;
+    s.style.width = size+'px';
+    s.style.height = size+'px';
+    s.style.left = cx+'px';
+    s.style.top = cy+'px';
+    s.style.background = colors[Math.floor(Math.random()*colors.length)];
+    document.body.appendChild(s);
+
+    const angle = Math.random()*Math.PI*2;
+    const dist = 60 + Math.random()*140;
+    const dx = Math.cos(angle)*dist;
+    const dy = Math.sin(angle)*dist - 40;
+    const rot = Math.random()*400 - 200;
+    const duration = 700 + Math.random()*400;
+
+    s.animate([
+      { transform:'translate(0,0) rotate(0deg)', opacity:1 },
+      { transform:`translate(${dx}px, ${dy+160}px) rotate(${rot}deg)`, opacity:0 }
+    ], { duration:duration, easing:'cubic-bezier(.3,.6,.4,1)' });
+
+    setTimeout(()=>s.remove(), duration);
+  }
+}
+
+function emitSparks(seal){
+  const rect = seal.getBoundingClientRect();
+  const cx = rect.left + rect.width/2;
+  const cy = rect.top + rect.height/2;
+
+  for(let i=0;i<26;i++){
+    const sp = document.createElement('div');
+    sp.className = 'spark';
+    const size = 2 + Math.random()*3;
+    sp.style.width = size+'px';
+    sp.style.height = size+'px';
+    sp.style.left = cx+'px';
+    sp.style.top = cy+'px';
+    document.body.appendChild(sp);
+
+    const angle = Math.random()*Math.PI*2;
+    const dist = 40 + Math.random()*220;
+    const dx = Math.cos(angle)*dist;
+    const dy = Math.sin(angle)*dist;
+    const duration = 900 + Math.random()*700;
+
+    sp.animate([
+      { transform:'translate(0,0)', opacity:1 },
+      { transform:`translate(${dx}px, ${dy}px)`, opacity:0 }
+    ], { duration:duration, easing:'ease-out' });
+
+    setTimeout(()=>sp.remove(), duration);
+  }
+}
+</script>
+
+</body>
+</html>
